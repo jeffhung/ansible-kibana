@@ -1,0 +1,20 @@
+galaxy_info:
+  author: jeffhung
+  description: Ansible playbook for installing Kibana on CentOS/Debian Linux
+  license: BSD
+
+  platforms:
+  - name: EL
+    versions:
+     - 6
+  - name: Ubuntu
+    versions:
+     - trusty
+
+  galaxy_tags:
+    - web
+    - system
+    - monitoring
+
+dependencies: []
+

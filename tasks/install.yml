@@ -1,0 +1,62 @@
+---
+
+- block:
+
+  - name: Add kibana APT key
+    apt_key:
+      state: present
+      url: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+    when: ansible_pkg_mgr == 'apt'
+
+  - name: Add kibana APT repository
+    apt_repository:
+      state: present
+      repo: "deb https://packages.elastic.co/kibana/{{ kibana_version }}/debian stable main"
+# added in ansible 2.1
+#     filename: "kibana-{{ kibana_version }}"
+    when: ansible_pkg_mgr == 'apt'
+
+  - name: Ensure kibana is installed
+    apt:  state=present pkg=kibana
+    when: ansible_pkg_mgr == 'apt'
+
+  # --------------------------------------------------------------------------
+
+  - name: Ensure libselinux-python is installed
+    yum:  state=present pkg=libselinux-python
+    when: "ansible_os_family == 'RedHat'"
+
+  - name: Add kibana RPM key
+    rpm_key:
+      state: present
+      key: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+    when: ansible_pkg_mgr == 'yum'
+
+  - name: Add kibana YUM repository
+    template:
+      src: kibana.repo.j2
+      dest: "/etc/yum.repos.d/kibana.repo"
+    when: ansible_pkg_mgr == 'yum'
+
+# added in ansible 2.1
+# - name: Add kibana YUM repository
+#   yum_repository:
+#     state: present
+#     name: "kibana-{{ kibana_version }}"
+#     description: "Kibana repository for {{ kibana_version }}.x packages"
+#     baseurl: "https://packages.elastic.co/kibana/{{ kibana_version }}/centos"
+#     gpgkey: "https://packages.elastic.co/GPG-KEY-elasticsearch"
+#     gpgcheck: yes
+#     enabled: yes
+#   when: ansible_pkg_mgr == 'yum'
+
+  - name: Ensure kibana is installed
+    yum:  state=present pkg=kibana
+    when: ansible_pkg_mgr == 'yum'
+
+  become: yes
+
+- name: Start kibana when boot
+  service: state=started name=kibana
+  become: yes
+

@@ -1,0 +1,5 @@
+---
+- name: restart kibana
+  service: state=restarted name=kibana
+  become: yes
+
